@@ -11,7 +11,8 @@
         android:id="@+id/order_date"
         android:layout_gravity="start"
         android:layout_weight="1"
-        android:text="order_date"/>
+        android:text="order_date"
+        android:textColor="@color/bt_color_primary"/>
 
 
     <TextView
@@ -21,7 +22,8 @@
         android:layout_gravity="center"
         android:layout_weight="1"
         android:textAlignment="center"
-        android:text="restaurant_name"/>
+        android:text="restaurant_name"
+        android:textColor="@color/bt_color_primary"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,6 +32,7 @@
         android:layout_gravity="end"
         android:layout_weight="1"
         android:textAlignment="textEnd"
-        android:text="total amount"/>
+        android:text="total amount"
+        android:textColor="@color/bt_color_primary"/>
 
 </LinearLayout>

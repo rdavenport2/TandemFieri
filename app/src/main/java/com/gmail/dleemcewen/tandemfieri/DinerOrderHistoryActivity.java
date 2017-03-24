@@ -104,7 +104,11 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         executeSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                checkboxLayout.setVisibility(View.INVISIBLE);
+                spinnerLayout.setVisibility(View.INVISIBLE);
+                selectDateLayout.setVisibility(View.INVISIBLE);
                 retrieveData();
+                orderHistoryView.setVisibility(View.VISIBLE);
             }
         });
 
