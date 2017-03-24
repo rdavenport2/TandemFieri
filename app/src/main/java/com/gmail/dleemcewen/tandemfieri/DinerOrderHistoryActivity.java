@@ -18,6 +18,11 @@ import android.widget.Toast;
 import com.gmail.dleemcewen.tandemfieri.Adapters.DinerOrderHistoryArrayAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Filters.AndCriteria;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaAfterStartDate;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaBeforeEndDate;
+import com.gmail.dleemcewen.tandemfieri.Interfaces.Criteria;
+import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.logging.Level;
 
 public class DinerOrderHistoryActivity extends AppCompatActivity implements DatePickerFragment.DateListener{
 
@@ -39,7 +45,7 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
     private ListView orderHistoryView;
 
     private User user;
-    private ArrayList<Order> ordersList;
+    private ArrayList<Order> ordersList, displayList;
     private ArrayList<String> restaurantList;
     private DatabaseReference mDatabase;
     private DinerOrderHistoryArrayAdapter dinerOrderHistoryArrayAdapter;
@@ -79,6 +85,7 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         user = (User) bundle.getSerializable("User");
         ordersList = new ArrayList<>();
         restaurantList = new ArrayList<>();
+        displayList = new ArrayList<>();
         dateListener = new DateListener();
         orderHistoryView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -91,9 +98,15 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         toDateView.setOnClickListener(dateListener);
 
         sortByButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                if(!displayList.isEmpty()) {
+                    resetView();
+                }
                 if(checkboxLayout.getVisibility() == View.INVISIBLE) {
+                    sortByDateBox.setChecked(false);
+                    sortByRestaurantBox.setChecked(false);
                     checkboxLayout.setVisibility(View.VISIBLE);
                 }else{
                     checkboxLayout.setVisibility(View.INVISIBLE);
@@ -104,9 +117,13 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         executeSortButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                checkboxLayout.setVisibility(View.INVISIBLE);
-                spinnerLayout.setVisibility(View.INVISIBLE);
-                selectDateLayout.setVisibility(View.INVISIBLE);
+                if(!displayList.isEmpty()) {
+                    resetView();
+                }else{
+                    checkboxLayout.setVisibility(View.INVISIBLE);
+                    spinnerLayout.setVisibility(View.INVISIBLE);
+                    selectDateLayout.setVisibility(View.INVISIBLE);
+                }
                 retrieveData();
                 orderHistoryView.setVisibility(View.VISIBLE);
             }
@@ -151,6 +168,18 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
         });
     }
 
+    private void resetView(){
+        displayList.clear();
+        ordersList.clear();
+        dinerOrderHistoryArrayAdapter.clear();
+        orderHistoryView.setVisibility(View.INVISIBLE);
+        spinnerLayout.setVisibility(View.INVISIBLE);
+        selectDateLayout.setVisibility(View.INVISIBLE);
+        checkboxLayout.setVisibility(View.INVISIBLE);
+        sortByDateBox.setChecked(false);
+        sortByRestaurantBox.setChecked(false);
+    }
+
     private void openOrder(Order order, int position){
         Bundle orderBundle = new Bundle();
         Intent intent = new Intent(DinerOrderHistoryActivity.this, ViewOrderActivity.class);
@@ -180,13 +209,26 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
                             }
                         }
                     }
-
                 }
-                if(ordersList.isEmpty()){
+
+                if(sortByDateBox.isChecked()){
+                    if(datesVerified()){
+                        displayList = selectOrders(ordersList);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Please enter a valid date range.", Toast.LENGTH_LONG);
+                    }
+                }else if(sortByRestaurantBox.isChecked()){
+                    LogWriter.log(getApplicationContext(), Level.INFO, "This is not implemented yet");
+                }else{
+                    displayList = ordersList;
+                }
+
+
+                if(displayList.isEmpty()){
                     Toast.makeText(getApplicationContext(), "You have no orders to display.", Toast.LENGTH_LONG).show();
                 }else {
 
-                    dinerOrderHistoryArrayAdapter = new DinerOrderHistoryArrayAdapter(getApplicationContext(), ordersList);
+                    dinerOrderHistoryArrayAdapter = new DinerOrderHistoryArrayAdapter(getApplicationContext(), displayList);
                     orderHistoryView.setAdapter(dinerOrderHistoryArrayAdapter);
                     }
 
@@ -196,6 +238,14 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
             public void onCancelled(DatabaseError databaseError) {}
         });//end listener
     }//end retrieve data
+
+    private ArrayList<Order> selectOrders(ArrayList<Order> orders){
+        //this criteria selects the orders between the chosen dates
+        Criteria after = new CriteriaAfterStartDate(dateFrom);
+        Criteria before = new CriteriaBeforeEndDate(dateTo);
+        Criteria between = new AndCriteria(after, before);
+        return (ArrayList<Order>) between.meetCriteria(orders);
+    }
 
     private boolean datesVerified(){
         //verify the start date is not after the end date
