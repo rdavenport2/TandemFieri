@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/sort_by_date"
-            android:text="Sort by Date"/>
+            android:text="Sort by Date" />
 
         <CheckBox
             android:layout_width="wrap_content"
@@ -116,12 +116,12 @@
         android:visibility="invisible">
 
         <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:id="@+id/restaurant_name_spinner">
-
-        </Spinner>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="14sp"
+            android:ems="10"
+            android:id="@+id/restaurant_name_spinner"
+            style="@style/Base.Widget.AppCompat.Spinner.Underlined"/>
     </LinearLayout>
 
 

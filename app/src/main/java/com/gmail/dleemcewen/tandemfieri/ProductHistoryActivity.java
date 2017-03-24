@@ -38,7 +38,7 @@ import java.util.Locale;
 import static com.gmail.dleemcewen.tandemfieri.R.id.select_item;
 
 public class ProductHistoryActivity extends AppCompatActivity implements DatePickerFragment.DateListener{
-    int viewId;
+    private int viewId;
     private TextView fromDate;
     private TextView toDate;
     private Date date_from;
