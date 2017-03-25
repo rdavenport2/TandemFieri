@@ -22,7 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.S;
+import static com.gmail.dleemcewen.tandemfieri.R.id.orderLaunch;
 
 public class LookAtMenuActivity extends AppCompatActivity {
     User user;
@@ -34,7 +34,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
     private ArrayList<MenuCompenet> allItems;
     private ListView listView;
     private TextView restaurantName;
-    private String latitude, longitude;
+    private String latitude, longitude, controlString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,7 @@ public class LookAtMenuActivity extends AppCompatActivity {
         restaurant = (Restaurant) bundle.getSerializable("Restaurant");
         latitude = bundle.getString("Latitude");
         longitude = bundle.getString("Longitude");
+        controlString = bundle.getString("OpenClosed");
         user = (User) bundle.getSerializable("User");
         int i = 0, j = 0;
 
@@ -102,14 +103,18 @@ public class LookAtMenuActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(android.view.MenuItem item) {
         // Handle item selection
         switch (item.getItemId()) {
-            case R.id.orderLaunch:
-                Intent orderLaunch = new Intent(LookAtMenuActivity.this, OrderMenuActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("Latitude", latitude);
-                bundle.putString("Longitude", longitude);
-                orderLaunch.putExtras(this.getIntent().getExtras());
-                orderLaunch.putExtras(bundle);
-                startActivity(orderLaunch);
+            case orderLaunch:
+                if(controlString.contains("CLOSED")){
+                    Toast.makeText(getApplicationContext(), "Sorry m8 the restaurant is not open go to Taco Bell", Toast.LENGTH_LONG).show();
+                }else {
+                    Intent orderLaunch = new Intent(LookAtMenuActivity.this, OrderMenuActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("Latitude", latitude);
+                    bundle.putString("Longitude", longitude);
+                    orderLaunch.putExtras(this.getIntent().getExtras());
+                    orderLaunch.putExtras(bundle);
+                    startActivity(orderLaunch);
+                }
                 return true;
 
             default:
