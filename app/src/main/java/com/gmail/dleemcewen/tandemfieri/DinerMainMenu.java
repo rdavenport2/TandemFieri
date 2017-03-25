@@ -57,7 +57,6 @@ import java.util.logging.Level;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.os.Build.VERSION_CODES.M;
 import static com.gmail.dleemcewen.tandemfieri.DinerMapActivity.MY_PERMISSIONS_REQUEST_LOCATION;
-import static com.paypal.android.sdk.onetouch.core.metadata.ah.t;
 
 public class DinerMainMenu extends AppCompatActivity {
     private NotificationMessages<NotificationMessage> notificationsRepository;
@@ -69,11 +68,7 @@ public class DinerMainMenu extends AppCompatActivity {
     List<Restaurant> restaurantsList;
     DatabaseReference mDatabase;
     static MenuItem deliveryOption;
-<<<<<<< HEAD
-    //DinerRestaurantsListAdapter adapter;
-=======
     private String controlString;
->>>>>>> refs/remotes/dereklm/master
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
