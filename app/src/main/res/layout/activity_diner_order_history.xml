@@ -34,13 +34,23 @@
             android:background="@android:color/transparent"/>
 
         <Button
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/execute_button"
             android:text="Show Order History"
             android:textAlignment="textEnd"
             android:layout_gravity="end"
             android:background="@android:color/transparent"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount"
+            android:id="@+id/sort_by_amount_button"
+            android:background="@android:color/transparent"
+            android:drawableEnd="@android:drawable/arrow_down_float"
+            android:drawableRight="@android:drawable/arrow_down_float"
+            android:drawableTint="@color/colorAccent"/>
 
     </LinearLayout>
 
