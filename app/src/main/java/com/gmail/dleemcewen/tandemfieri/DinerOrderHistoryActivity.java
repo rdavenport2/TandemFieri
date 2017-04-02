@@ -186,11 +186,25 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
     }
 
     private void executeSort(){
-        resetView();
-        sortOrders();
-        sortByDateBox.setChecked(false);
-        sortByRestaurantBox.setChecked(false);
-        orderHistoryView.setVisibility(View.VISIBLE);
+        if(sortByDateBox.isChecked()){
+            if(datesVerified()){
+                resetView();
+                sortOrders();
+                sortByDateBox.setChecked(false);
+                sortByRestaurantBox.setChecked(false);
+                orderHistoryView.setVisibility(View.VISIBLE);
+            }else{
+                orderHistoryView.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(), "Please enter a valid date range.", Toast.LENGTH_LONG);
+            }
+
+        } else{
+            resetView();
+            sortOrders();
+            sortByDateBox.setChecked(false);
+            sortByRestaurantBox.setChecked(false);
+            orderHistoryView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void sortByAmount() {
@@ -295,12 +309,13 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
             }
         }
         else if(sortByDateBox.isChecked()){
-            if(datesVerified()){
+            displayList = selectOrdersByDate(ordersList);
+           /* if(datesVerified()){
                 displayList = selectOrdersByDate(ordersList);
                 LogWriter.log(getApplicationContext(), Level.INFO, "display list has " + valueOf(displayList.size()) + " items.");
             }else{
                 Toast.makeText(getApplicationContext(), "Please enter a valid date range.", Toast.LENGTH_LONG);
-            }
+            }*/
         }else if(sortByRestaurantBox.isChecked()){
             displayList = selectOrdersByRestaurant(ordersList);
         }else{
