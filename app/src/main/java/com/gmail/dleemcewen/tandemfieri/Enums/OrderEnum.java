@@ -11,5 +11,4 @@ public enum OrderEnum implements Serializable {
     PAYMENT_PENDING,
     EN_ROUTE,
     COMPLETE,
-    REFUNDED;
 }
