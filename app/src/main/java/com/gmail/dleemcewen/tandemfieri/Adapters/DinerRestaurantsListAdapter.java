@@ -17,12 +17,10 @@ import com.gmail.dleemcewen.tandemfieri.Entities.Restaurant;
 import com.gmail.dleemcewen.tandemfieri.Formatters.DateFormatter;
 import com.gmail.dleemcewen.tandemfieri.R;
 import com.gmail.dleemcewen.tandemfieri.Repositories.Ratings;
-import com.gmail.dleemcewen.tandemfieri.Repositories.RestaurantHours;
 import com.gmail.dleemcewen.tandemfieri.Tasks.TaskResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -183,13 +181,8 @@ public class DinerRestaurantsListAdapter extends BaseAdapter {
         StringBuilder hoursTextBuilder = new StringBuilder();
 
         if (dayHours.getOpen()) {
-<<<<<<< HEAD
             if (dayHours.compareOpenTimeWithCurrentTime(currentDate)) {
                 if (dayHours.compareClosedTimeWithCurrentTime(currentDate)) {
-=======
-            if (dayHours.compareOpenTimeWithCurrentTime(dayHours.getHourOpen(), currentDate)) {
-                if (dayHours.compareClosedTimeWithCurrentTime(dayHours.getHourClosed(), currentDate)) {
->>>>>>> origin/master
                     hoursTextBuilder.append("CURRENTLY OPEN. ");
                     hoursTextBuilder.append("Open today from ");
                     hoursTextBuilder.append(DateFormatter.convertMilitaryTimeToStandardString(dayHours.getHourOpen()));

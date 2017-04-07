@@ -280,7 +280,9 @@ public class DinerOrderHistoryActivity extends AppCompatActivity implements Date
 
                 //populate spinner adapter
                 for(Order order: ordersList){
-                    restaurantList.add(order.getRestaurantName());
+                    if(!restaurantList.contains(order.getRestaurantName())) {
+                        restaurantList.add(order.getRestaurantName());
+                    }
                 }
                 restaurantAdapter = new ArrayAdapter<String>(getApplicationContext(),R.layout.view_order_items, restaurantList);
                 restaurantSpinner.setAdapter(restaurantAdapter);
