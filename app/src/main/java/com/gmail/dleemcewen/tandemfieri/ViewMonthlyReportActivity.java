@@ -9,9 +9,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import com.gmail.dleemcewen.tandemfieri.Adapters.MonthlyReportArrayAdapter;
 import com.gmail.dleemcewen.tandemfieri.Entities.Order;
 import com.gmail.dleemcewen.tandemfieri.Entities.User;
+import com.gmail.dleemcewen.tandemfieri.Filters.CriteriaRestaurant;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,16 +27,18 @@ import java.util.logging.Level;
 
 public class ViewMonthlyReportActivity extends AppCompatActivity {
 
-    ListView restaurantListView;
-    Spinner monthSpinner;
-    ListView displayListView;
-    Button executeButton;
-    User currentUser;
-    ArrayAdapter<String> restaurantAdapter;
-    ArrayList<Order> orderList;
-    ArrayList<String> restaurantNamesList;
-    ArrayList<String> selectedRestaurants;
-    String monthSelected = "";
+    private ListView restaurantListView;
+    private Spinner monthSpinner;
+    private ListView displayListView;
+    private Button executeButton;
+    private User currentUser;
+    private ArrayAdapter<String> restaurantAdapter;
+    private MonthlyReportArrayAdapter monthlyReportArrayAdapter;
+    private ArrayList<Order> orderList;
+    private ArrayList<String> restaurantNamesList;
+    private ArrayList<String> selectedRestaurants;
+    private ArrayList<DisplayItem> displayList;
+    private String monthSelected = "";
 
     private DatabaseReference mDatabase;
 
@@ -61,6 +66,7 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
         orderList = new ArrayList<>();
         restaurantNamesList = new ArrayList<>();
         selectedRestaurants = new ArrayList<>();
+        displayList = new ArrayList<>();
         executeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,11 +126,64 @@ public class ViewMonthlyReportActivity extends AppCompatActivity {
     }
 
     private void executeSearch(){
+        //clear display list
+        if(!displayList.isEmpty()){
+            displayList.clear();
+        }
+        //get the selected restaurants
         selectedRestaurants = getSelectedRestaurants();
-        LogWriter.log(getApplicationContext(), Level.INFO, "Month selected: " + monthSelected);
+
+        //create list of DisplayItem objects
+        for(String name : selectedRestaurants){
+            DisplayItem newItem = new DisplayItem(name);
+            displayList.add(newItem);
+        }
+
+        //filter orders by selected restaurants
+        ArrayList<Order> ordersSelected = new ArrayList<>();
+        for(String s : selectedRestaurants){
+            CriteriaRestaurant cr = new CriteriaRestaurant(s);
+            ordersSelected.addAll((ArrayList<Order>) cr.meetCriteria(orderList));
+        }
+
+        //filter orders by month
+       // ordersSelected = filterMonth(ordersSelected);
+
+        //accumulate order totals
+        for(DisplayItem current : displayList){
+            for(Order o : ordersSelected){
+                if(current.getName().equals(o.getRestaurantName())){
+                    current.setTotal(current.getTotal() + o.getTotal());
+                }
+            }
+        }
+
+        //display view
+        displayResults();
+       /* LogWriter.log(getApplicationContext(), Level.INFO, "Month selected: " + monthSelected);
         for(String s : selectedRestaurants) {
             LogWriter.log(getApplicationContext(), Level.INFO, s);
+        }*/
+    }
+
+    private void displayResults(){
+        //set adapter
+        for(DisplayItem d : displayList) {
+            LogWriter.log(getApplicationContext(), Level.INFO, "Order: " + d.getName() + " " + d.getTotal());
         }
+
+        monthlyReportArrayAdapter = new MonthlyReportArrayAdapter(getApplicationContext(), displayList, monthSelected);
+        displayListView.setAdapter(monthlyReportArrayAdapter);
+
+        if(displayList.isEmpty()){
+            Toast.makeText(getApplicationContext(), "You have no orders to display.", Toast.LENGTH_LONG).show();
+            displayListView.setVisibility(View.INVISIBLE);
+            restaurantListView.setVisibility(View.VISIBLE);
+        }
+
+        //prepare view
+        restaurantListView.setVisibility(View.INVISIBLE);
+        displayListView.setVisibility(View.VISIBLE);
     }
 
     private ArrayList<String> getSelectedRestaurants(){

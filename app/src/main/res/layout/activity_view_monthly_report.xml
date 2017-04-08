@@ -64,11 +64,11 @@
     </LinearLayout>
 
     <ListView
-            android:id="@+id/display_sales_report"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/selection_spinners"
-            android:visibility="invisible"/>
+        android:id="@+id/display_sales_report"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/selection_spinners"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/go_button"
