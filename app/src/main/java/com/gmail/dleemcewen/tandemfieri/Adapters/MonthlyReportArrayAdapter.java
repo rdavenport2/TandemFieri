@@ -22,13 +22,15 @@ public class MonthlyReportArrayAdapter extends ArrayAdapter<DisplayItem> {
     private final Context context;
     private final ArrayList<DisplayItem> values;
     private final String month;
+    private final String year;
     private final double payment = 100.00;
 
-    public MonthlyReportArrayAdapter(Context context, ArrayList<DisplayItem> values, String month) {
+    public MonthlyReportArrayAdapter(Context context, ArrayList<DisplayItem> values, String month, String year) {
         super(context, R.layout.monthly_report_layout, values);
         this.context = context;
         this.values = values;
         this.month = month;
+        this.year = year;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class MonthlyReportArrayAdapter extends ArrayAdapter<DisplayItem> {
         TextView tvPayment = (TextView) rowView.findViewById(R.id.pay_amount);
 
         tvName.setText(values.get(position).getName());
-        tvMonth.setText(month);
+        tvMonth.setText(month + " " + year);
         tvTotal.setText(formatAmount(values.get(position).getTotal()));
         tvPayment.setText(formatAmount(payment));
 
