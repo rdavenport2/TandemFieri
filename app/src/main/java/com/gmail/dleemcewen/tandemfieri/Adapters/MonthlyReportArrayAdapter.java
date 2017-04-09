@@ -10,7 +10,6 @@ import android.widget.TextView;
 import com.gmail.dleemcewen.tandemfieri.DisplayItem;
 import com.gmail.dleemcewen.tandemfieri.R;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -38,8 +37,6 @@ public class MonthlyReportArrayAdapter extends ArrayAdapter<DisplayItem> {
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.monthly_report_layout, parent, false);
-
-        SimpleDateFormat formatDateJava = new SimpleDateFormat("MM/dd/yyyy", Locale.US);
 
         TextView tvName = (TextView) rowView.findViewById(R.id.rest_name);
         TextView tvMonth = (TextView) rowView.findViewById(R.id.month_to_display);

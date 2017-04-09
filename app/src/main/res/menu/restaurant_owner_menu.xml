@@ -13,9 +13,6 @@
         android:title="Manage Restaurants"/>
     <item android:id="@+id/monthly_report"
         android:title="Monthly Report"/>
-<<<<<<< HEAD
-=======
     <item android:id="@+id/sign_out"
         android:title="Sign Out"/>
->>>>>>> refs/remotes/dereklm/master
 </menu>
