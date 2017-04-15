@@ -2,6 +2,7 @@ package com.gmail.dleemcewen.tandemfieri;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.gmail.dleemcewen.tandemfieri.Entities.User;
 import com.gmail.dleemcewen.tandemfieri.Logging.LogWriter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,7 +26,6 @@ public class EditPasswordActivity extends AppCompatActivity {
     private User currentUser;
     private String type = "";
     private String uid = "";
-    private boolean validPswd = false;
 
     private FirebaseUser fireuser;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -33,13 +34,14 @@ public class EditPasswordActivity extends AppCompatActivity {
     private EditText password, confirmPswd, oldPassword;
     private BootstrapButton saveButton, cancelButton;
 
+    private long mLastClickTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_password);
 
-        Bundle bundle = new Bundle();
-        bundle = this.getIntent().getExtras();
+        Bundle bundle = this.getIntent().getExtras();
         currentUser = (User) bundle.getSerializable("User");
         type = this.getIntent().getStringExtra("UserType");
 
@@ -101,37 +103,63 @@ public class EditPasswordActivity extends AppCompatActivity {
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-                while (!isValidPassword(oldPassword.getText().toString(),
+                if (SystemClock.elapsedRealtime() - mLastClickTime < 2000){
+                    return;
+                }
+                mLastClickTime = SystemClock.elapsedRealtime();
+                if (isValidPassword(oldPassword.getText().toString(),
                         password.getText().toString(),
                         confirmPswd.getText().toString())) {
 
-                    if (isValidPassword(oldPassword.getText().toString(),
-                            password.getText().toString(),
-                            confirmPswd.getText().toString())) {
-                        savePassword(password.getText().toString());
-                        finish();
-                    } else {
+                    //Verify that the oldpassword is correct by logging in
+                    mAuth
+                        .signInWithEmailAndPassword(fireuser.getEmail(), oldPassword.getText().toString())
+                        .addOnCompleteListener(EditPasswordActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Password changed.", Toast.LENGTH_SHORT).show();
 
-                        oldPassword.setText("");
-                        password.setText("");
-                        confirmPswd.setText("");
-                        oldPassword.requestFocus();
-                    }
+                                    savePassword(password.getText().toString());
+                                    finish();
+                                } else {
+                                    String msg = "The current password did not match the existing password.  The password was not changed.";
+                                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+
+                                    resetPasswordEntries();
+                                }
+                            }
+                        });
+                } else {
+                    resetPasswordEntries();
                 }//end onClick
             }
         });
 
     }//end onCreate
 
+    private void resetPasswordEntries() {
+        oldPassword.setText("");
+        password.setText("");
+        confirmPswd.setText("");
+
+        setFocusToCurrentPassword();
+    }
+
+    private void setFocusToCurrentPassword() {
+        oldPassword.requestFocus();
+    }
+
     //validates the password
     public boolean isValidPassword(String oldPassword, String newPassword, String confirmPassword){
 
         boolean result = true;
-        String msg = "Password changed.";
+        String msg = "";
 
-       if (!newPassword.equals(confirmPassword)) {
+        if (!oldPassword.matches(".*\\w.*")) {
+            msg = "Your current password is required.";
+            result = false;
+        } else if (!newPassword.equals(confirmPassword)) {
             msg = "Your password confirmation must be the same as your new password.";
             result = false;
         }
